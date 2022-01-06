@@ -8,9 +8,7 @@ package device
 import (
 	"bytes"
 	"encoding/binary"
-	"encoding/json"
 	"errors"
-	"fmt"
 	"net"
 	"sync"
 	"sync/atomic"
@@ -327,8 +325,6 @@ func (device *Device) RoutineHandshake(id int) {
 				goto skip
 			}
 
-			ddd, _ := json.Marshal(msg)
-			fmt.Println("a11111:", string(ddd))
 
 			// consume initiation
 
@@ -346,7 +342,6 @@ func (device *Device) RoutineHandshake(id int) {
 			// update endpoint
 			peer.SetEndpointFromPacket(elem.endpoint)
 
-			fmt.Println("ww++=========:", peer.String())
 			device.log.Verbosef("%v - Received handshake initiation", peer)
 			atomic.AddUint64(&peer.stats.rxBytes, uint64(len(elem.packet)))
 

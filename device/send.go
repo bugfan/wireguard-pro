@@ -437,8 +437,6 @@ func (peer *Peer) RoutineSequentialSender() {
 
 		// send message and return buffer to pool
 
-		// fmt.Print("p----------sent:", string(elem.packet))
-
 		err := peer.SendBuffer(elem.packet)
 		if len(elem.packet) != MessageKeepaliveSize {
 			peer.timersDataSent()
