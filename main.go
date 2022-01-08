@@ -15,10 +15,10 @@ import (
 	"strconv"
 	"syscall"
 
-	"github.com/bugfan/wire/conn"
-	"github.com/bugfan/wire/device"
-	"github.com/bugfan/wire/ipc"
-	"github.com/bugfan/wire/tun"
+	"github.com/bugfan/wireguard-go/conn"
+	"github.com/bugfan/wireguard-go/device"
+	"github.com/bugfan/wireguard-go/ipc"
+	"github.com/bugfan/wireguard-go/tun"
 )
 
 const (

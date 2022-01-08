@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"sync/atomic"
 
-	"github.com/bugfan/wire/tun"
+	"github.com/bugfan/wireguard-go/tun"
 )
 
 const DefaultMTU = 1420

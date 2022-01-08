@@ -12,7 +12,7 @@ import (
 	"time"
 	"unsafe"
 
-	"github.com/bugfan/wire/replay"
+	"github.com/bugfan/wireguard-go/replay"
 )
 
 /* Due to limitations in Go and /x/crypto there is currently

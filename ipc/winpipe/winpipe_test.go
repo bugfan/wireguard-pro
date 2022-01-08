@@ -21,8 +21,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/bugfan/wireguard-go/ipc/winpipe"
 	"golang.org/x/sys/windows"
-	"github.com/bugfan/wire/ipc/winpipe"
 )
 
 func randomPipePath() string {

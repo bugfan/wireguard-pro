@@ -12,7 +12,7 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/bugfan/wire/conn"
+	"github.com/bugfan/wireguard-go/conn"
 )
 
 type ChannelBind struct {

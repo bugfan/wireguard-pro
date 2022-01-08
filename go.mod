@@ -1,4 +1,4 @@
-module github.com/bugfan/wire
+module github.com/bugfan/wireguard-go
 
 go 1.17
 

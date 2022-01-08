@@ -18,7 +18,7 @@ import (
 	"golang.org/x/net/ipv4"
 	"golang.org/x/net/ipv6"
 
-	"github.com/bugfan/wire/conn"
+	"github.com/bugfan/wireguard-go/conn"
 )
 
 type QueueHandshakeElement struct {
@@ -324,7 +324,6 @@ func (device *Device) RoutineHandshake(id int) {
 				device.log.Errorf("Failed to decode initiation message")
 				goto skip
 			}
-
 
 			// consume initiation
 

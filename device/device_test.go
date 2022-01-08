@@ -19,9 +19,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/bugfan/wire/conn"
-	"github.com/bugfan/wire/conn/bindtest"
-	"github.com/bugfan/wire/tun/tuntest"
+	"github.com/bugfan/wireguard-go/conn"
+	"github.com/bugfan/wireguard-go/conn/bindtest"
+	"github.com/bugfan/wireguard-go/tun/tuntest"
 )
 
 // uapiCfg returns a string that contains cfg formatted use with IpcSet.

@@ -13,9 +13,9 @@ import (
 	"net"
 	"net/http"
 
-	"github.com/bugfan/wire/conn"
-	"github.com/bugfan/wire/device"
-	"github.com/bugfan/wire/tun/netstack"
+	"github.com/bugfan/wireguard-go/conn"
+	"github.com/bugfan/wireguard-go/device"
+	"github.com/bugfan/wireguard-go/tun/netstack"
 )
 
 func main() {

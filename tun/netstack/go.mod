@@ -1,4 +1,4 @@
-module github.com/bugfan/wire/tun/netstack
+module github.com/bugfan/wireguard-go/tun/netstack
 
 go 1.16
 
