@@ -7,9 +7,7 @@ package device
 
 import (
 	"container/list"
-	"encoding/base64"
 	"errors"
-	"fmt"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -142,13 +140,7 @@ func (peer *Peer) SendBuffer(buffer []byte) error {
 	}
 	return err
 }
-func Btoa(b []byte) []byte {
-	decodeBytes, err := base64.StdEncoding.DecodeString(string(b))
-	if err != nil {
-		fmt.Println("btoa err:", err)
-	}
-	return decodeBytes
-}
+
 func (peer *Peer) String() string {
 	// The awful goo that follows is identical to:
 	//
@@ -158,18 +150,9 @@ func (peer *Peer) String() string {
 	//
 	// except that it is considerably more efficient.
 	src := peer.handshake.remoteStatic
-	test := peer.handshake.remoteEphemeral
 	b64 := func(input byte) byte {
 		return input + 'A' + byte(((25-int(input))>>8)&6) - byte(((51-int(input))>>8)&75) - byte(((61-int(input))>>8)&15) + byte(((62-int(input))>>8)&3)
 	}
-	for i := 0; i < len(src); i++ {
-		fmt.Print(string(src[i]))
-	}
-	fmt.Println()
-	for i := 0; i < len(test); i++ {
-		fmt.Print(string(test[i]))
-	}
-	fmt.Println()
 
 	b := []byte("peer(____…____)")
 	const first = len("peer(")

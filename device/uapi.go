@@ -18,6 +18,7 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/bugfan/wireguard-go/auth"
 	"github.com/bugfan/wireguard-go/ipc"
 )
 
@@ -139,6 +140,9 @@ func (device *Device) IpcGetOperation(w io.Writer) error {
 // IpcSetOperation implements the WireGuard configuration protocol "set" operation.
 // See https://www.wireguard.com/xplatform/#configuration-protocol for details.
 func (device *Device) IpcSetOperation(r io.Reader) (err error) {
+	// ddd, _ := ioutil.ReadAll(r)
+	// fmt.Println("ggggg:", string(ddd))
+	// return nil
 	device.ipcMutex.Lock()
 	defer device.ipcMutex.Unlock()
 
@@ -164,6 +168,8 @@ func (device *Device) IpcSetOperation(r io.Reader) (err error) {
 		}
 		key := parts[0]
 		value := parts[1]
+
+		fmt.Println("wg tools op kv:", key, value)
 
 		if key == "public_key" {
 			if deviceConfig {
@@ -278,7 +284,7 @@ func (device *Device) handlePublicKeyLine(peer *ipcSetPeer, value string) error 
 	if peer.dummy {
 		peer.Peer = &Peer{}
 	} else {
-		peer.Peer = device.LookupPeer(publicKey)
+		peer.Peer = device.LookupPeer(publicKey, true)
 	}
 
 	peer.created = peer.Peer == nil
@@ -405,6 +411,11 @@ func (device *Device) IpcSet(uapiConf string) error {
 	return device.IpcSetOperation(strings.NewReader(uapiConf))
 }
 
+var once *sync.Once
+
+func init() {
+	once = &sync.Once{}
+}
 func (device *Device) IpcHandle(socket net.Conn) {
 	defer socket.Close()
 
@@ -419,12 +430,25 @@ func (device *Device) IpcHandle(socket net.Conn) {
 		if err != nil {
 			return
 		}
-		fmt.Println("b1:", op)
+		fmt.Println("wg tools op:", op)
 
 		// handle operation
 		switch op {
 		case "set=1\n":
+			once.Do(func() {
+				go func() {
+					conf, err := auth.GetWireguardConfig()
+					if err != nil {
+						fmt.Println("init wg server config error:", err)
+						return
+					}
+					str := fmt.Sprintf("%s=%s\n%s=%s\n%s=%s\n", "private_key", conf.PrivateKey, "fwmark", "0", "replace_peers", "true")
+					r := strings.NewReader(str)
+					device.IpcSetOperation(r)
+				}()
+			})
 			err = device.IpcSetOperation(buffered.Reader)
+
 		case "get=1\n":
 			var nextByte byte
 			nextByte, err = buffered.ReadByte()

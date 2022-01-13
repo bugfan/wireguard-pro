@@ -6,11 +6,16 @@
 package device
 
 import (
+	"context"
+	"encoding/base64"
+	"encoding/hex"
+	"fmt"
 	"runtime"
 	"sync"
 	"sync/atomic"
 	"time"
 
+	"github.com/bugfan/wireguard-go/auth"
 	"github.com/bugfan/wireguard-go/conn"
 	"github.com/bugfan/wireguard-go/ratelimiter"
 	"github.com/bugfan/wireguard-go/rwcancel"
@@ -317,7 +322,69 @@ func NewDevice(tunDevice tun.Device, bind conn.Bind, logger *Logger) *Device {
 	return device
 }
 
-func (device *Device) LookupPeer(pk NoisePublicKey) *Peer {
+func btoa(data []byte) []byte {
+	// Base64 Standard Encoding
+	sEnc := base64.StdEncoding.EncodeToString(data)
+	// fmt.Println(sEnc) // aGVsbG8gd29ybGQxMjM0NSE/JComKCknLUB+
+	return []byte(sEnc)
+}
+
+func ParseNPK(pk NoisePublicKey) (string, []byte) {
+	buf := []byte{}
+	for i := 0; i < len(pk); i++ {
+		buf = append(buf, pk[i])
+	}
+	return string(btoa(buf)), buf
+}
+
+func ToWgIpcSetString(bs []byte, key, ips string) string {
+
+	hexKey := hex.EncodeToString(bs)
+
+	return fmt.Sprintf(`public_key=%s
+replace_allowed_ips=true
+allowed_ip=%s`, hexKey, ips)
+}
+func (device *Device) MyWgSet(conf string) {
+	ctx, cancelFunc := context.WithTimeout(context.Background(), time.Second/2) //500ms timeout
+	go func() {
+		defer cancelFunc()
+		device.log.Verbosef("use context set peer config begin")
+		err := device.IpcSet(conf)
+		if err != nil {
+			device.log.Verbosef("device set config faild,error is %v,config is '%s'\n", err, conf)
+		}
+		device.log.Verbosef("use context set peer config end")
+
+	}()
+	<-ctx.Done() // wait goroutine
+}
+
+func (device *Device) LookupPeer(pk NoisePublicKey, master bool) *Peer {
+
+	// if already has,return it
+	device.peers.RLock()
+	o := device.peers.keyMap[pk]
+	device.peers.RUnlock()
+	if o != nil {
+		return o
+	}
+
+	// if dont't have ,go to auth server
+	str, bs := ParseNPK(pk)
+	fmt.Printf("[authentication] peer %s verify auth\n", str)
+	peer, err := auth.Verify(str)
+	if err != nil {
+		fmt.Printf("[authentication-faild] can not verify %s 's authority,error is %v\n", str, err)
+		return nil
+	}
+	fmt.Printf("[authentication-ok] %s verify ok\n", str)
+
+	// authorication and set peer to keyMap
+	conf := ToWgIpcSetString(bs, peer.PublicKey, peer.Address)
+	device.MyWgSet(conf)
+
+	// lock op move to final
 	device.peers.RLock()
 	defer device.peers.RUnlock()
 

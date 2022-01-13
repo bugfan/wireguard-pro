@@ -281,7 +281,7 @@ func (device *Device) ConsumeMessageInitiation(msg *MessageInitiation) *Peer {
 
 	// lookup peer
 
-	peer := device.LookupPeer(peerPK)
+	peer := device.LookupPeer(peerPK, false)
 	if peer == nil {
 		return nil
 	}
