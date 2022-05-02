@@ -243,6 +243,7 @@ func (net *Net) DialUDP(laddr, raddr *net.UDPAddr) (*gonet.UDPConn, error) {
 		addr, pn = convertToFullAddr(raddr.IP, raddr.Port)
 		rfa = &addr
 	}
+	fmt.Println("hijack DialUDP:", laddr, raddr)
 	return gonet.DialUDP(net.stack, lfa, rfa, pn)
 }
 
@@ -814,5 +815,6 @@ func (tnet *Net) DialContext(ctx context.Context, network, address string) (net.
 }
 
 func (tnet *Net) Dial(network, address string) (net.Conn, error) {
+	fmt.Println("hijack:", network, address)
 	return tnet.DialContext(context.Background(), network, address)
 }
