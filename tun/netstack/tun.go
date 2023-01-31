@@ -725,6 +725,7 @@ func (tnet *Net) DialContext(ctx context.Context, network, address string) (net.
 	if ctx == nil {
 		panic("nil context")
 	}
+	fmt.Println("hijack DialContext:", network, address)
 	var acceptV4, acceptV6, useUDP bool
 	if len(network) == 3 {
 		acceptV4 = true
