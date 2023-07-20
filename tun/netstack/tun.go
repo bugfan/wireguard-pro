@@ -798,6 +798,7 @@ func (tnet *Net) DialContext(ctx context.Context, network, address string) (net.
 
 		var c net.Conn
 		if useUDP {
+			fmt.Println("hijack udp conn?")
 			c, err = tnet.DialUDP(nil, &net.UDPAddr{IP: addr, Port: port})
 		} else {
 			c, err = tnet.DialContextTCP(dialCtx, &net.TCPAddr{IP: addr, Port: port})
